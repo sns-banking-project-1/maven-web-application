@@ -5,9 +5,7 @@ def mavenHome = tool name:"Maven3.9.5"
 properties([buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '10', daysToKeepStr: '', numToKeepStr: '10')), 
 pipelineTriggers([pollSCM('* * * * * ')])])
 jacoco buildOverBuild: true, deltaBranchCoverage: '80', deltaClassCoverage: '80', deltaComplexityCoverage: '80', deltaInstructionCoverage: '80', deltaLineCoverage: '80', deltaMethodCoverage: '80', maximumBranchCoverage: '80', maximumClassCoverage: '80', maximumComplexityCoverage: '80', maximumInstructionCoverage: '80', maximumLineCoverage: '80', maximumMethodCoverage: '80', minimumBranchCoverage: '80', minimumClassCoverage: '80', minimumComplexityCoverage: '80', minimumInstructionCoverage: '80', minimumLineCoverage: '80', minimumMethodCoverage: '80'
-timestamps{
-    
-}
+timestamps()
 
 echo "The Job name is: ${env.JOB_NAME}"
 echo "The build number is: ${env.BUILD_NUMBER}"
