@@ -1,0 +1,41 @@
+node {
+
+def mavenHome = tool name:"Maven3.9.5"
+
+properties([buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '10', daysToKeepStr: '', numToKeepStr: '10')), 
+pipelineTriggers([pollSCM('* * * * * ')])])
+jacoco buildOverBuild: true, deltaBranchCoverage: '80', deltaClassCoverage: '80', deltaComplexityCoverage: '80', deltaInstructionCoverage: '80', deltaLineCoverage: '80', deltaMethodCoverage: '80', maximumBranchCoverage: '80', maximumClassCoverage: '80', maximumComplexityCoverage: '80', maximumInstructionCoverage: '80', maximumLineCoverage: '80', maximumMethodCoverage: '80', minimumBranchCoverage: '80', minimumClassCoverage: '80', minimumComplexityCoverage: '80', minimumInstructionCoverage: '80', minimumLineCoverage: '80', minimumMethodCoverage: '80'
+timestamps{
+    
+}
+
+echo "The Job name is: ${env.JOB_NAME}"
+echo "The build number is: ${env.BUILD_NUMBER}"
+echo "The Node name is: ${env.NODE_NAME}"
+echo "The Home Directory is: ${env.JENKINS_HOME}"
+
+
+stage('CheckoutCode'){
+    git branch: 'development', credentialsId: 'c8e76f9c-76f2-4c35-9852-fadec3e2deca', 
+    url: 'https://github.com/sns-banking-project-1/maven-web-application/'
+}    
+
+stage('Build'){
+    sh "${mavenHome}/bin/mvn clean package"
+}
+
+stage('ExecuteSonarQubeReport'){
+sh "${mavenHome}/bin/mvn clean sonar:sonar package"
+}
+
+stage('uploadIntoNexus'){
+sh "${mavenHome}/bin/mvn clean deploy"
+}
+
+stage('DeployAppIntoTomcat'){ 
+sshagent(['1ff6e008-c11e-4b88-892f-c9aa64b77b5e']){  
+sh "scp -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/Pipeline-scriptedway/target/maven-web-application.war ec2-user@172.31.6.81:/opt/apache-tomcat-9.0.82/webapps/"
+}
+}
+
+}
